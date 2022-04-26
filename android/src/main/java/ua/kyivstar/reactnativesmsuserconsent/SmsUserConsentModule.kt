@@ -36,16 +36,12 @@ class SmsUserConsentModule(reactContext: ReactApplicationContext) : ReactContext
     }
     this.promise = promise
     if (reactContext?.currentActivity != null) {
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
           val task: Task<Void> = SmsRetriever.getClient(reactContext.currentActivity!!).startSmsUserConsent(null)
           task.addOnSuccessListener { // successfully started an SMS Retriever for one SMS message
           registerReceiver()
           }
           task.addOnFailureListener { e -> promise.reject(E_OTP_ERROR, e) }
         }
-      });
     }
   }
 
