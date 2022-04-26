@@ -35,7 +35,7 @@ class SmsUserConsentModule(reactContext: ReactApplicationContext) : ReactContext
     }
     this.promise = promise
     if (reactContext?.currentActivity != null) {
-      reactContext?.currentActivity.runOnUiThread(new Runnable() {
+      UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public void run() {
           val task: Task<Void> = SmsRetriever.getClient(reactContext.currentActivity!!).startSmsUserConsent(null)
