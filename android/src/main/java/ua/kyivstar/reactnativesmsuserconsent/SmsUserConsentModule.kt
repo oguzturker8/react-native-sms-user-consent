@@ -30,21 +30,22 @@ class SmsUserConsentModule(reactContext: ReactApplicationContext) : ReactContext
 
   @ReactMethod
   fun listenOTP(promise: Promise) {
+    Activity activity = getCurrentActivity();
     if (this.promise != null) {
       promise.reject(E_OTP_ERROR, Error("Reject previous request"))
     }
     this.promise = promise
     if (reactContext?.currentActivity != null) {
-      UiThreadUtil.runOnUiThread(new Runnable() {
+      activity.runOnUiThread(new Runnable() {
         @Override
         public void run() {
           val task: Task<Void> = SmsRetriever.getClient(reactContext.currentActivity!!).startSmsUserConsent(null)
           task.addOnSuccessListener { // successfully started an SMS Retriever for one SMS message
-            registerReceiver()
+          registerReceiver()
           }
           task.addOnFailureListener { e -> promise.reject(E_OTP_ERROR, e) }
         }
-      })
+      });
     }
   }
 
@@ -56,9 +57,9 @@ class SmsUserConsentModule(reactContext: ReactApplicationContext) : ReactContext
 
   private fun registerReceiver() {
     if (reactContext?.currentActivity != null) {
-        receiver = SmsRetrieveBroadcastReceiver(reactContext.currentActivity)
-        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
-        reactContext.currentActivity?.registerReceiver(receiver, intentFilter, SmsRetriever.SEND_PERMISSION, null)
+      receiver = SmsRetrieveBroadcastReceiver(reactContext.currentActivity)
+      val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+      reactContext.currentActivity?.registerReceiver(receiver, intentFilter, SmsRetriever.SEND_PERMISSION, null)
     }
   }
 
